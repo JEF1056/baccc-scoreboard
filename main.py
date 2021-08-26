@@ -36,13 +36,19 @@ except: db = dbhandler(config["database"]['url'], config["database"]['password']
 def index():
     teams=db.get_teams()
     ctfs=db.get_ctfs()
-    print(teams)
+    print(db.create_user("249024790030057472", "Code Blue"))
+    return render_template('index.html', teams=list(teams), ctfs=ctfs)
+
+@app.route("/login", methods=['GET', 'POST'])
+def login():
+    teams=db.get_teams()
+    ctfs=db.get_ctfs()
     return render_template('index.html', teams=list(teams), ctfs=ctfs)
 
 """
 @app.route("/redir")
 def redirect_to_page():
-    path = request.path
+    path = request.path     
     return render_template('redirect.html', task=path)
 """
 
