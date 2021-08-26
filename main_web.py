@@ -15,10 +15,10 @@ app.config["DISCORD_REDIRECT_URI"] =   # URL to your callback endpoint.
 #app.config["DISCORD_BOT_TOKEN"] = ""  # Required to access BOT resources.
 
 github_blueprint = make_github_blueprint(
-    client_id="35d779aeb1dd69469cd8",
-    client_secret="104b76a96bc86ec5797ef552d667bf52ca17430f",
-    redirect_url="/dashboard",
-    redirect_to="/dashboard"
+    client_id="",
+    client_secret="",
+    redirect_url="",
+    redirect_to=""
 )
 app.register_blueprint(github_blueprint, url_prefix="/login", redirect_url="/dashboard", redirect_to="/dashboard")
 discord = DiscordOAuth2Session(app)
