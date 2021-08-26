@@ -1,0 +1,7 @@
+flask
+dataset
+Flask-Dance
+Flask-Discord
+gunicorn
+psycopg2-binary
+requests

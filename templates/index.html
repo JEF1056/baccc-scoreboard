@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<link rel="icon" href="/static/images/icon.ico">
+<html>
+    <head>
+		<title>JadeAI ||| Home</title>
+        <meta charset="utf-8" />
+        <meta name="JadeAI ||| Home" content="Jade is an advanced AI chatbot utilizing a custom autoregressive encoder/decoder switch transformer, enabling her ability to understand natural language, contextualize messages, and respond in kind. Invite her to your server today!">
+        <meta property="og:title" content="JadeAI ||| Home" />
+        <meta property="og:type" content="og:website" />
+        <meta property="og:url" content="https://jadeai.ml" />
+        <meta property="og:image" content="/static/images/avatar.jpg" />
+        <meta property="og:description" content="Jade is an advanced AI chatbot that has the ability to understand natural language, contextualize messages, and respond in kind. Invite her to your server today!" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+        <link rel="stylesheet" href="/static/assets/css/main.css" />
+        {% include 'head.html' %}
+	</head>
+	<body>
+
+		<!-- Header -->
+            {% include 'header.html' %}
+
+		<!-- Main -->
+			<div id="main">
+                This is very temporary, yes.
+			</div>
+
+		<!-- Footer -->
+            {% include 'footer.html' %}
+
+		<!-- Scripts -->
+        <!-- NOTE: Please make this not jinja2 compatable, but rather javascript POST-->
+            <script>
+                var ctx = document.getElementById('plot').getContext('2d');
+                var plot = new Chart(ctx,{
+                    type: 'line',
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                display: true,
+                                grid: {
+                                    color: 'white',
+                                    tickColor: 'grey'
+                                },
+                                ticks: {
+                                    display: false,
+                                    color: 'white'
+                                }
+                            },
+                            y: {
+                                display: true,
+                                grid: {
+                                    color: 'white',
+                                    tickColor: 'grey'
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Messages'
+                                },
+                                ticks: {
+                                    display: false,
+                                    color: 'white'
+                                }
+                            }
+                        },
+                    },
+                    interaction: {
+                        intersect: false,
+                    },
+                    data: {
+                        labels: {{stats['dates']|tojson}},
+                        datasets: [
+                            {
+                                label: 'Messages',
+                                data: {{stats['messages']|tojson}},
+                                borderColor: '#48db70',
+                                fill: false,
+                                tension: 0.4
+                            }
+                        ]
+                    }
+                })
+            </script>
+	</body>
+</html>

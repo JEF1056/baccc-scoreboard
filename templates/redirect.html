@@ -1,0 +1,25 @@
+{% if task in ['/1'] %}
+<head>
+    <title>1</title>
+    <meta name="1" content="1">
+    <meta property="og:title" content="1" />
+    <meta property="og:type" content="og:website" />
+    <meta property="og:url" content="1" />
+    <meta property="og:image" content="1" />
+    <meta property="og:description" content="1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta http-equiv="refresh" content="0; URL=redir" />
+{% elif task == '/2' %}
+<head>
+    <title>2</title>
+    <meta name="2" content="2">
+    <meta property="og:title" content="2" />
+    <meta property="og:type" content="og:website" />
+    <meta property="og:url" content="2" />
+    <meta property="og:image" content="2" />
+    <meta property="og:description" content="2" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+    <meta http-equiv="refresh" content="0; URL=redir" />
+{% endif %}
+    {% include 'head.html' %}
+</head>
