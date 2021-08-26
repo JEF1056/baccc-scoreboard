@@ -34,7 +34,10 @@ except: db = dbhandler(config["database"]['url'], config["database"]['password']
     
 @app.route("/", methods=['GET', 'POST'])
 def index():
-    return render_template('index.html')
+    teams=db.get_teams()
+    ctfs=db.get_ctfs()
+    print(teams)
+    return render_template('index.html', teams=list(teams), ctfs=ctfs)
 
 """
 @app.route("/redir")
