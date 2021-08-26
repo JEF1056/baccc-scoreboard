@@ -1,5 +1,5 @@
 import json
-import dataset
+from src.database import dbhandler
 from werkzeug.exceptions import HTTPException
 from flask import Flask, request, render_template, request
 
@@ -25,10 +25,12 @@ discord = DiscordOAuth2Session(app)
 #executor=concurrent.futures.ThreadPoolExecutor(max_workers=100)
 """
 
-config = json.load("config.json")
+config = json.load(open("config.json","r"))
 
 app = Flask(__name__)
 app.secret_key = config["key"].encode()
+try: db = dbhandler(config["database"]['url'], config["database"]['password'], port=config["database"]['port'])
+except: db = dbhandler(config["database"]['url'], config["database"]['password'])
     
 @app.route("/", methods=['GET', 'POST'])
 def index():
@@ -46,4 +48,4 @@ def handle_exception(e):
     return render_template("error.html", error=e), e.code
 
 if __name__ == "__main__":
-   app.run(host="0.0.0.0", threaded=True, port=8080)
+   app.run(host="0.0.0.0", threaded=True)
