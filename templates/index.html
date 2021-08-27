@@ -1,77 +1,20 @@
-<!doctype html>
-<html>
-
-<head>
-    <title>BACCC Team Scores</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
-    <script src="/static/utils.js"></script>
+<head> 
     <link href="/static/main.css" type="text/css" rel="stylesheet">
-    <style>
-        canvas {
-            -moz-user-select: none;
-            -webkit-user-select: none;
-            -ms-user-select: none;
-        }
-    </style>
-</head>
-
-<body>
-    <div style="width: 95%; margin: 0 auto;">
-        <canvas id="canvas"></canvas>
-    </div>
-    <script>
-        var barChartData = {
-            labels: {{teams | safe}},
-            datasets: {{ctfs | safe}}
-        };
-        window.onload = function () {
-            var ctx = document.getElementById('canvas').getContext('2d');
-            window.myBar = new Chart(ctx, {
-                type: 'bar',
-                data: barChartData,
-                options: {
-                    title: {
-                        display: true,
-                        text: 'BACCC Team Scores'
-                    },
-                    tooltips: {
-                        mode: 'index',
-                        intersect: false
-                    },
-                    responsive: true,
-                    scales: {
-                        xAxes: [{
-                            stacked: true,
-                        }],
-                        yAxes: [{
-                            stacked: true
-                        }]
-                    }
-                }
-            });
-        };
-    </script>
-</body>
-
-<div class="table_div">
-    <table>
-        <tbody>
-            <tr>
-                <th>Position</th>
-                <th>Team</th>
-                <th>Total (relative)</th>
-                <th>Total (literal)</th>
-            </tr>
-            {% for team in team_totals %}
-            <tr>
-                <td><b>{{loop.index}}</b></td>
-                <td>{{team[0]}}</td>
-                <td>{{team[1]}}</td>
-                <td>{{team[2]}}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</div>
-
-</html>
+ </head>
+ <div class="form-style-5">
+    {% if not authed %}
+    <form action="/login/discord">
+        <input type="submit" value="Login" />
+    </form>
+    {% else %}
+    <form action="/upload">
+        <input type="submit" value="Upload a Score" />
+    </form>
+    <form action="/logout">
+        <input type="submit" value="Logout" />
+    </form>
+    {% endif %}
+    <form action="/scores">
+        <input type="submit" value="Scoreboard" />
+    </form>
+ </div>

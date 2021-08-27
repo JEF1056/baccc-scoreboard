@@ -1,5 +1,6 @@
 import json
 import dataset
+import sqlalchemy
 
 class dbhandler:
     def __init__(self, url, password, port=5432):
@@ -15,7 +16,7 @@ class dbhandler:
             self.ctfs.create_column('teams', self.db.types.text, nullable=False)
             #create users table
             self.users.create_column('discord', self.db.types.text, unique=True, nullable=False)
-            self.users.create_column('role', self.db.types.text, nullable=True)
+            self.users.create_column('role', self.db.types.text, nullable=False)
             self.users.create_column('team', self.db.types.text, nullable=True)
             #create teams table
             self.teams.create_column('name', self.db.types.text, unique=True, nullable=False)
@@ -53,7 +54,10 @@ class dbhandler:
         return self.get_team(name)
     
     def create_user(self, discord, team, role="user"):
-        curr_team, discord = self.get_team(team), str(discord)
-        if not curr_team: curr_team=self.create_team(team)
-        self.users.upsert({"discord": discord, "role": role, "team": team}, keys=["discord"])
+        if team: #create team if verifiable and nonexisitent
+            curr_team, discord = self.get_team(team), str(discord)
+            if not curr_team: curr_team=self.create_team(team)
+        #do not update if key already exists
+        try: self.users.insert({"discord": discord, "role": role, "team": None})
+        except sqlalchemy.exc.IntegrityError: pass
         return self.get_user(discord)

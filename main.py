@@ -1,49 +1,48 @@
 import json
 from src.database import dbhandler
 from werkzeug.exceptions import HTTPException
-from flask import Flask, request, render_template, request
-
-"""
-# Below uis useful code if github/discord oauth2 floaws are needed
-
-from flask_dance.contrib.github import make_github_blueprint, github
 from flask_discord import DiscordOAuth2Session, requires_authorization
+from flask import Flask, redirect, url_for, render_template, request, send_from_directory
 
-app.config["DISCORD_CLIENT_ID"] =      # Discord client ID.
-app.config["DISCORD_CLIENT_SECRET"] =  # Discord client secret.
-app.config["DISCORD_REDIRECT_URI"] =   # URL to your callback endpoint.
-#app.config["DISCORD_BOT_TOKEN"] = ""  # Required to access BOT resources.
-
-github_blueprint = make_github_blueprint(
-    client_id="",
-    client_secret="",
-    redirect_url="",
-    redirect_to=""
-)
-app.register_blueprint(github_blueprint, url_prefix="/login", redirect_url="/dashboard", redirect_to="/dashboard")
-discord = DiscordOAuth2Session(app)
-#executor=concurrent.futures.ThreadPoolExecutor(max_workers=100)
-"""
-
+#Load config
 config = json.load(open("config.json","r"))
 
 app = Flask(__name__)
 app.secret_key = config["key"].encode()
 try: db = dbhandler(config["database"]['url'], config["database"]['password'], port=config["database"]['port'])
 except: db = dbhandler(config["database"]['url'], config["database"]['password'])
-    
-@app.route("/", methods=['GET', 'POST'])
-def index():
-    teams=db.get_teams()
-    ctfs=db.get_ctfs()
-    print(db.create_user("249024790030057472", "Code Blue"))
-    return render_template('index.html', teams=list(teams), ctfs=ctfs)
 
-@app.route("/login", methods=['GET', 'POST'])
-def login():
+app.config["DISCORD_CLIENT_ID"] = config["discord"]["client_id"]      # Discord client ID.
+app.config["DISCORD_CLIENT_SECRET"] = config["discord"]["client_secret"]  # Discord client secret.
+app.config["DISCORD_REDIRECT_URI"] = config["discord"]["redirect_uri"]   # URL to your callback endpoint.
+discord = DiscordOAuth2Session(app)
+
+# Handle oauth login and logout
+@app.route("/login/discord")
+def discord_login():
+    return discord.create_session(scope=["identify"])
+
+@app.route("/logout/discord")
+@requires_authorization
+def discord_logout():
+    discord.revoke()
+    return redirect(url_for(".index"))
+    
+# Handle pages
+@app.route("/", methods=['GET'])
+def index():
+    print(db.create_user("249024790030057472", None))
+    if discord.authorized: 
+        user = discord.fetch_user()
+        user = db.create_user(user.id, None)
+    else: user=None
+    return render_template('index.html', authed=discord.authorized)
+
+@app.route("/board", methods=['GET', 'POST'])
+def board():
     teams=db.get_teams()
     ctfs=db.get_ctfs()
-    return render_template('index.html', teams=list(teams), ctfs=ctfs)
+    return render_template('board.html', teams=list(teams), ctfs=ctfs)
 
 """
 @app.route("/redir")
