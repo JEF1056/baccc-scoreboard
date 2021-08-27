@@ -2,7 +2,7 @@ import json
 from src.database import dbhandler
 from werkzeug.exceptions import HTTPException
 from flask_discord import DiscordOAuth2Session, requires_authorization
-from flask import Flask, redirect, url_for, render_template, request, send_from_directory
+from flask import Flask, redirect, url_for, render_template, session, request, send_from_directory
 
 #Load config
 config = json.load(open("config.json","r"))
@@ -22,6 +22,13 @@ discord = DiscordOAuth2Session(app)
 def discord_login():
     return discord.create_session(scope=["identify"])
 
+@app.route("/login/discord/authorized")
+def discord_callback():
+    session.clear()
+    try: discord.callback()
+    except:pass
+    return redirect(url_for(".index"))
+
 @app.route("/logout/discord")
 @requires_authorization
 def discord_logout():
@@ -33,13 +40,13 @@ def discord_logout():
 def index():
     print(db.create_user("249024790030057472", None))
     if discord.authorized: 
-        user = discord.fetch_user()
-        user = db.create_user(user.id, None)
-    else: user=None
-    return render_template('index.html', authed=discord.authorized)
+        discord_user = discord.fetch_user()
+        user = db.create_user(discord_user.id, None)
+    else: discord_user, user = None, None   
+    return render_template('index.html', authed=discord.authorized, discord_user=discord_user, user=user)
 
-@app.route("/board", methods=['GET', 'POST'])
-def board():
+@app.route("/scores", methods=['GET', 'POST'])
+def scores():
     teams=db.get_teams()
     ctfs=db.get_ctfs()
     return render_template('board.html', teams=list(teams), ctfs=ctfs)

@@ -3,16 +3,24 @@
  </head>
  <div class="form-style-5">
     {% if not authed %}
-    <form action="/login/discord">
-        <input type="submit" value="Login" />
-    </form>
+        <form action="/login/discord">
+            <input type="submit" value="Login" />
+        </form>
     {% else %}
-    <form action="/upload">
-        <input type="submit" value="Upload a Score" />
-    </form>
-    <form action="/logout">
-        <input type="submit" value="Logout" />
-    </form>
+        {% if user["team"] %}
+            <form action="/upload">
+                <input type="submit" value="Upload a Score" />
+            </form>
+        {% endif %}
+        <form action="/logout">
+            <input type="submit" value="Logout" />
+        </form>
+        <p>Logged in as: {{discord_user.name}}</p>
+        {% if user["team"] %}
+            <p>Team: {{user["team"]}}</p>
+        {% else %}
+            <p>Team: Not Set.</p>
+        {% endif %}
     {% endif %}
     <form action="/scores">
         <input type="submit" value="Scoreboard" />
