@@ -8,7 +8,7 @@
     <header>
     <h3>User: {{user}}</h3>
     <h5 style="margin-bottom:0.2em;">Team: {{team}}</h5>
-    <h6 style="margin-top:0.2em;">Not you? <a href="/logout">logout</a></h6>
+    <h6 style="margin-top:0.2em;">Not you? <a href="/logout/discord">logout</a></h6>
     </header>
     <form method="post" enctype=multipart/form-data>
         <label for="ctf">CTF:</label><br>
@@ -19,8 +19,6 @@
         </select>
         <label for="Score">Score:</label><br>
         <input type="text" id="score" name="score"><br>
-        <!--<input type="checkbox" id="self-hosted" name="self-hosted" value="yes">
-        <label for="self-hosted"> This CTF was created by my team</label><br>-->
         <label for="screenshot">Upload Screenshot</label></label><br>
         <input type=file name="screenshot"><br><br>
         <input type="submit" value="Submit">

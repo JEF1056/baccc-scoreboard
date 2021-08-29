@@ -2,7 +2,7 @@ import json
 import dataset
 import sqlalchemy
 
-class dbhandler:
+class api:
     def __init__(self, url, password, port=5432):
         print("~~~~~Initializing database~~~~~")
         self.db = dataset.connect(f'postgresql://postgres:{password}@{url}:{port}/postgres')
@@ -21,6 +21,8 @@ class dbhandler:
             #create teams table
             self.teams.create_column('name', self.db.types.text, unique=True, nullable=False)
             self.teams.create_column('ctfs', self.db.types.text, nullable=True)
+            #create screenshots bucket
+            self.db.query("insert into storage.buckets (id, name) values ('screenshots', 'screenshots');")
             
             self.teams.upsert({"name": "admins", "ctfs": None}, keys=["name"])
         print("~~~~~Init Complete~~~~~")
@@ -39,6 +41,11 @@ class dbhandler:
                 else: temp[user["team"]]["members"]=[user]
         return temp
     
+    def get_ctf(self, name):
+        ret=self.ctfs.find_one(name=str(name))
+        if ret: ret={"teams": json.loads(ret["teams"])}
+        return ret
+
     def get_user(self, discord):
         ret=self.users.find_one(discord=str(discord))
         if ret: ret={i:ret[i] for i in ret if i not in ["id", 'discord']}
@@ -54,10 +61,20 @@ class dbhandler:
         return self.get_team(name)
     
     def create_user(self, discord, team, role="user"):
-        if team: #create team if verifiable and nonexisitent
-            curr_team, discord = self.get_team(team), str(discord)
-            if not curr_team: curr_team=self.create_team(team)
+        discord=str(discord)
+        #create team if verifiable and nonexisitent
+        if team and (not self.get_team(team)): self.create_team(team)
         #do not update if key already exists
         try: self.users.insert({"discord": discord, "role": role, "team": None})
         except sqlalchemy.exc.IntegrityError: pass
         return self.get_user(discord)
+
+    def upload_screenshot(self, file):
+        raise NotImplementedError
+
+    def add_score(self, ctf_name, score, team_name):
+        team, ctf=self.get_team(team_name), self.get_ctf(ctf_name)
+        team["ctfs"].update({ctf_name:score})
+        if team_name not in ctf["teams"]: ctf["teams"].append(team_name)
+        self.teams.upsert({"name": team_name, "ctfs": json.dumps(team["ctfs"])}, keys=["name"])
+        self.ctfs.upsert({"name": ctf_name, "teams": json.dumps(ctf["teams"])}, keys=["name"])
