@@ -2,6 +2,9 @@
     <link href="/static/main.css" type="text/css" rel="stylesheet">
  </head>
  <div class="form-style-5">
+    <form action="/scores">
+        <input type="submit" value="Scoreboard" />
+    </form>
     {% if not authed %}
         <form action="/login/discord">
             <input type="submit" value="Login" />
@@ -12,17 +15,14 @@
                 <input type="submit" value="Upload a Score" />
             </form>
         {% endif %}
-        <form action="/logout">
+        <form action="/logout/discord">
             <input type="submit" value="Logout" />
         </form>
-        <p>Logged in as: {{discord_user.name}}</p>
+        <p>Logged in as: {{discord_user.name}}#{{discord_user.discriminator}}</p>
         {% if user["team"] %}
             <p>Team: {{user["team"]}}</p>
         {% else %}
-            <p>Team: Not Set.</p>
+            <p>Team: Not Set. Contact an administrator.</p>
         {% endif %}
     {% endif %}
-    <form action="/scores">
-        <input type="submit" value="Scoreboard" />
-    </form>
  </div>

@@ -38,10 +38,10 @@ def discord_logout():
 # Handle pages
 @app.route("/", methods=['GET'])
 def index():
-    print(db.create_user("249024790030057472", None))
     if discord.authorized: 
         discord_user = discord.fetch_user()
         user = db.create_user(discord_user.id, None)
+        print(user)
     else: discord_user, user = None, None   
     return render_template('index.html', authed=discord.authorized, discord_user=discord_user, user=user)
 
@@ -50,6 +50,18 @@ def scores():
     teams=db.get_teams()
     ctfs=db.get_ctfs()
     return render_template('board.html', teams=list(teams), ctfs=ctfs)
+
+@app.route("/upload")
+@requires_authorization
+def upload():
+    discord_user=discord.fetch_user()
+    user = db.get_user(discord_user.id)
+    if user != None:
+        team = db.get_team(user["team"])
+        ctfs = db.get_ctfs()
+        return render_template("upload.html", ctfs=ctfs, user=str(discord_user), team=user["team"], scores=team['ctfs'])
+    else:
+        return render_template("unauth.html")
 
 """
 @app.route("/redir")

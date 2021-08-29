@@ -41,12 +41,12 @@ class dbhandler:
     
     def get_user(self, discord):
         ret=self.users.find_one(discord=str(discord))
-        if ret: ret={ret["discord"]:{i:ret[i] for i in ret if i not in ["id", 'discord']}}
+        if ret: ret={i:ret[i] for i in ret if i not in ["id", 'discord']}
         return ret
     
     def get_team(self, name):
         ret=self.teams.find_one(name=name)
-        if ret: ret={ret["name"]:{"ctfs": json.loads(ret["ctfs"])}}
+        if ret: ret={"ctfs": json.loads(ret["ctfs"])}
         return ret
         
     def create_team(self, name):
