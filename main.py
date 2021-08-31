@@ -50,15 +50,15 @@ def index():
 
 @app.route("/scores", methods=['GET', 'POST'])
 def scores():
-    teams=db.get_teams()
-    ctfs=helpers.preconvert_to_chartjs(db.get_ctfs())
+    teams, ctfs= db.get_teams(), helpers.preconvert_to_chartjs(db.get_ctfs())
     for index, team in enumerate(teams):
         for ctf in teams[team]["ctfs"]:
             ctfs[ctf]["data"]=helpers.insert_at_index(ctfs[ctf]["data"], index, teams[team]["ctfs"][ctf])
-    ctfs=helpers.convert_to_chartjs(ctfs)
+    ctfs, team_totals =helpers.convert_to_chartjs(ctfs, teams)
+
     print(teams)
     print(ctfs)
-    return render_template('board.html', teams=list(teams), ctfs=ctfs, team_totals=[])
+    return render_template('board.html', teams=list(teams), ctfs=ctfs, team_totals=team_totals)
 
 @app.route("/upload", methods=["GET", "POST"])
 @requires_authorization

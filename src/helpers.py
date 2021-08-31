@@ -10,9 +10,6 @@ def create_dir(path):
     try: os.makedirs(path)
     except: pass
 
-def normalize_scores():
-    pass
-
 def hex_to_rgb(hex):
     hex = hex.lstrip('#')
     hlen = len(hex)
@@ -33,13 +30,24 @@ def preconvert_to_chartjs(ctfs):
     for ctf in ctfs:
         ret[ctf]={"data":[], "backgroundColor":f"rgb{color+(0.5,)}"}
         try: color=darken_color(color)
-        except:
-            print(color)
-            print(type(color))
+        except: print(f"{color}\n{type(color)}")
     return ret
 
-def convert_to_chartjs(ctfs, scale=True):
-    return [{"label":ctf, "data": scale_teams(ctfs[ctf]["data"]) if scale else ctfs[ctf]["data"], "backgroundColor":ctfs[ctf]["backgroundColor"]} for ctf in ctfs]
+def convert_to_chartjs(ctfs, teams, normalize=True):
+    ret_ctfs, ret_teams, scaled_teams=[],[],{}
+    for ctf in ctfs:
+        scaled_teams[ctf]=normalize_teams(ctfs[ctf]["data"]) if normalize else ctfs[ctf]["data"]
+        ret_ctfs.append({"label":ctf, "data": scaled_teams[ctf], "backgroundColor":ctfs[ctf]["backgroundColor"]})
+    for index, team in enumerate(teams):
+        relative, literal = 0,0
+        for ctf in scaled_teams:
+            try:
+                literal+=ctfs[ctf]["data"][index]
+                relative+=scaled_teams[ctf][index]
+            except:pass
+        ret_teams.append((team, relative, literal))
+    ret_teams=sorted(ret_teams, key=lambda x: x[1], reverse=True)
+    return ret_ctfs, ret_teams
 
 def insert_at_index(inlist, index, value):
     ret, value=inlist, int(value)
@@ -47,5 +55,5 @@ def insert_at_index(inlist, index, value):
     except: ret += ([0]*(index-len(ret))+[value])
     return ret
 
-def scale_teams(ctfs):
+def normalize_teams(ctfs):
     return [100*(value/max(ctfs)) for value in ctfs]
