@@ -45,7 +45,7 @@ def convert_to_chartjs(ctfs, teams, normalize=True):
                 literal+=ctfs[ctf]["data"][index]
                 relative+=scaled_teams[ctf][index]
             except:pass
-        ret_teams.append((team, relative, literal))
+        ret_teams.append((team, int(relative), int(literal)))
     ret_teams=sorted(ret_teams, key=lambda x: x[1], reverse=True)
     return ret_ctfs, ret_teams
 
@@ -56,4 +56,4 @@ def insert_at_index(inlist, index, value):
     return ret
 
 def normalize_teams(ctfs):
-    return [100*(value/max(ctfs)) for value in ctfs]
+    return [100*(value//max(ctfs)) for value in ctfs]
