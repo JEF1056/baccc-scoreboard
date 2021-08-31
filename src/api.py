@@ -34,7 +34,7 @@ class api:
         return {entry["discord"]:{i:entry[i] for i in entry if i not in ["id", 'discord']} for entry in self.users.find(id={'>=': 0})}
     
     def get_teams(self, members=False): 
-        temp={entry["name"]:{"ctfs": json.loads(entry["ctfs"])} if entry["ctfs"] else None for entry in self.teams.find(id={'>=': 0})}
+        temp={entry["name"]:{"ctfs": json.loads(entry["ctfs"])} if entry["ctfs"] else {'ctfs': {}} for entry in self.teams.find(id={'>=': 0})}
         if members:
             for user in self.get_users():
                 if "members" in temp[user["team"]]: temp[user["team"]]["members"].append(user)

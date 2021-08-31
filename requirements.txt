@@ -5,3 +5,5 @@ Flask-Discord
 gunicorn
 psycopg2-binary
 requests
+colormap
+easydev

@@ -51,7 +51,11 @@ def index():
 @app.route("/scores", methods=['GET', 'POST'])
 def scores():
     teams=db.get_teams()
-    ctfs=db.get_ctfs()
+    ctfs=helpers.preconvert_to_chartjs(db.get_ctfs())
+    for index, team in enumerate(teams):
+        for ctf in teams[team]["ctfs"]:
+            ctfs[ctf]["data"]=helpers.insert_at_index(ctfs[ctf]["data"], index, teams[team]["ctfs"][ctf])
+    ctfs=helpers.convert_to_chartjs(ctfs)
     print(teams)
     print(ctfs)
     return render_template('board.html', teams=list(teams), ctfs=ctfs, team_totals=[])
