@@ -7,3 +7,6 @@ def allowed_file(filename):
 def create_dir(path):
     try: os.makedirs(path)
     except: pass
+
+def normalize_scores():
+    pass

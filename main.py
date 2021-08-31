@@ -45,7 +45,6 @@ def index():
     if discord.authorized: 
         discord_user = discord.fetch_user()
         user = db.create_user(discord_user.id, None)
-        print(user)
     else: discord_user, user = None, None   
     return render_template('index.html', authed=discord.authorized, discord_user=discord_user, user=user)
 
@@ -53,7 +52,9 @@ def index():
 def scores():
     teams=db.get_teams()
     ctfs=db.get_ctfs()
-    return render_template('board.html', teams=list(teams), ctfs=ctfs)
+    print(teams)
+    print(ctfs)
+    return render_template('board.html', teams=list(teams), ctfs=ctfs, team_totals=[])
 
 @app.route("/upload", methods=["GET", "POST"])
 @requires_authorization
@@ -62,12 +63,14 @@ def upload():
     user, ctfs, errors = db.get_user(discord_user.id), db.get_ctfs(), []
     if not user: abort(401)
     team = db.get_team(user["team"])
+    if not team: abort(401)
 
     if request.method == 'POST':
         print(request.files)
         screenshot = request.files['screenshot']
         if screenshot.filename == '': errors.append("No Screenshot")
-        elif screenshot and helpers.allowed_file(screenshot.filename):
+        elif screenshot and not helpers.allowed_file(screenshot.filename): errors.append("Not a supported screenshot type.")
+        else:
             #save screenshot if possible
             try:
                 helpers.create_dir(os.path.join(config["screenshots"], user['team']))
@@ -76,6 +79,7 @@ def upload():
                 print(e)
                 errors.append("Unable to save screenshot. Contact an admin.")
 
+            #ensure possible user errors can't be made
             if not str(request.form["ctf"].strip()): errors.append("CTF name is empty")
             if str(request.form["ctf"].strip()) not in ctfs: errors.append("CTF does not exist/is not enabled. Contact an admin.")
             try: int(request.form["score"])
@@ -83,6 +87,8 @@ def upload():
 
             #in the case of no errors, add score.
             if errors==[]: db.add_score(request.form["ctf"], request.form["score"], user["team"])
+
+            #update variables before loading the page
             user, ctfs, errors = db.get_user(discord_user.id), db.get_ctfs(), []
             team = db.get_team(user["team"])
 

@@ -56,16 +56,20 @@ class api:
         if ret: ret={"ctfs": json.loads(ret["ctfs"])}
         return ret
         
+    def create_ctf(self, name):
+        self.ctfs.upsert({"name": name, "teams": "[]"}, keys=["name"])
+        return self.get_ctf(name)
+
     def create_team(self, name):
         self.teams.upsert({"name": name, "ctfs": "{}"}, keys=["name"])
         return self.get_team(name)
     
-    def create_user(self, discord, team, role="user"):
+    def create_user(self, discord, team=None, role="user"):
         discord=str(discord)
         #create team if verifiable and nonexisitent
         if team and (not self.get_team(team)): self.create_team(team)
         #do not update if key already exists
-        try: self.users.insert({"discord": discord, "role": role, "team": None})
+        try: self.users.insert({"discord": discord, "role": role, "team": team})
         except sqlalchemy.exc.IntegrityError: pass
         return self.get_user(discord)
 
