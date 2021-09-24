@@ -16,6 +16,7 @@ class api:
             self.ctfs.create_column('teams', self.db.types.text, nullable=False)
             #create users table
             self.users.create_column('discord', self.db.types.text, unique=True, nullable=False)
+            self.users.create_column('handle', self.db.types.text, unique=True, nullable=True)
             self.users.create_column('role', self.db.types.text, nullable=False)
             self.users.create_column('team', self.db.types.text, nullable=True)
             #create teams table
@@ -64,12 +65,12 @@ class api:
         self.teams.upsert({"name": name, "ctfs": "{}"}, keys=["name"])
         return self.get_team(name)
     
-    def create_user(self, discord, team=None, role="user"):
+    def create_user(self, discord, handle, team=None, role="user"):
         discord=str(discord)
         #create team if verifiable and nonexisitent
         if team and (not self.get_team(team)): self.create_team(team)
         #do not update if key already exists
-        try: self.users.insert({"discord": discord, "role": role, "team": team})
+        try: self.users.insert({"discord": discord, "handle": handle, "role": role, "team": team})
         except sqlalchemy.exc.IntegrityError: pass
         return self.get_user(discord)
 

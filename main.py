@@ -44,7 +44,7 @@ def discord_logout():
 def index():
     if discord.authorized: 
         discord_user = discord.fetch_user()
-        user = db.create_user(discord_user.id, None)
+        user = db.create_user(discord_user.id, discord_user.username + '#' + discord_user.discriminator, None)
     else: discord_user, user = None, None   
     return render_template('index.html', authed=discord.authorized, discord_user=discord_user, user=user)
 
