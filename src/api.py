@@ -64,7 +64,7 @@ class api:
         self.teams.upsert({"name": name, "ctfs": "{}"}, keys=["name"])
         return self.get_team(name)
     
-    def create_user(self, discord, handle, team=None, role="user"):
+    def create_user(self, discord, team=None, role="user"):
         discord=str(discord)
         #create team if verifiable and nonexisitent
         if team and (not self.get_team(team)): self.create_team(team)
