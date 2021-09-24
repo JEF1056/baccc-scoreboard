@@ -44,7 +44,7 @@ def discord_logout():
 def index():
     if discord.authorized: 
         discord_user = discord.fetch_user()
-        user = db.create_user(discord_user.id, discord_user.username + '#' + discord_user.discriminator, None)
+        user = db.create_user(f'{discord_user.username}#{discord_user.discriminator}', None)
     else: discord_user, user = None, None   
     return render_template('index.html', authed=discord.authorized, discord_user=discord_user, user=user)
 
@@ -64,7 +64,7 @@ def scores():
 @requires_authorization
 def upload():
     discord_user=discord.fetch_user()
-    user, ctfs, errors = db.get_user(discord_user.id), db.get_ctfs(), []
+    user, ctfs, errors = db.get_user(f'{discord_user.username}#{discord_user.discriminator}'), db.get_ctfs(), []
     if not user: abort(401)
     team = db.get_team(user["team"])
     if not team: abort(401)
@@ -93,7 +93,7 @@ def upload():
             if errors==[]: db.add_score(request.form["ctf"], request.form["score"], user["team"])
 
             #update variables before loading the page
-            user, ctfs, errors = db.get_user(discord_user.id), db.get_ctfs(), []
+            user, ctfs, errors = db.get_user(f'{discord_user.username}#{discord_user.discriminator}'), db.get_ctfs(), []
             team = db.get_team(user["team"])
 
     return render_template("upload.html", ctfs=ctfs, user=str(discord_user), team=user["team"], scores=team['ctfs'], errors=errors)
